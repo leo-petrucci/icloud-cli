@@ -17,8 +17,7 @@ Working now:
 
 Not done yet:
 
-- Reusing the saved session for iCloud service commands
-- Commands for Reminders, Notes, Drive, Photos, and other services
+- Commands for Notes, Drive, Photos, and other services
 - Full cookie/session validation
 
 ## Install
@@ -117,13 +116,61 @@ icloud-cli whoami
 
 ## Session File
 
-The CLI saves session data here:
+The CLI saves session data here on macOS:
 
 ```text
 ~/Library/Application Support/icloud-cli/session.json
 ```
 
+On Linux:
+
+```text
+${XDG_CONFIG_HOME:-~/.config}/icloud-cli/session.json
+```
+
+On Windows:
+
+```text
+%APPDATA%\icloud-cli\session.json
+```
+
 This file is a secret. Do not commit it. Do not share it.
+
+## Reminders
+
+List active reminders and their IDs:
+
+```sh
+icloud-cli reminders list
+```
+
+Use JSON output in scripts:
+
+```sh
+icloud-cli reminders list --json
+```
+
+Add a reminder to a list. The list name must match exactly:
+
+```sh
+icloud-cli reminders add "Buy milk" --list Inbox
+```
+
+Add many reminders with one quoted, comma-separated list:
+
+```sh
+icloud-cli reminders add-bulk "Buy milk,Book dentist,Call Sam" --list Inbox
+```
+
+The CLI trims spaces around each title and adds titles in order. If one request fails, titles added before it remain in the list.
+
+Complete a reminder using an ID from `reminders list`:
+
+```sh
+icloud-cli reminders complete <reminder-id>
+```
+
+Each command first calls `accountLogin` to get the current Reminders service URL. The URL can change between sessions.
 
 ## Security Notes
 

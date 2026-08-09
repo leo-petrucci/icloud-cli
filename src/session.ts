@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 
-const defaultSessionPath = join(homedir(), 'Library', 'Application Support', 'icloud-cli', 'session.json');
+const defaultSessionPath = getDefaultSessionPath();
 
 export const SESSION_PATH = process.env.ICLOUD_CLI_SESSION_PATH ?? defaultSessionPath;
 export const SESSION_DIR = dirname(SESSION_PATH);
@@ -10,6 +10,7 @@ export const SESSION_DIR = dirname(SESSION_PATH);
 export type SessionData = {
   accountCountry?: string;
   authAttributes?: string;
+  clientId?: string;
   cookies: Record<string, string>;
   extendedLogin?: boolean;
   savedAt: string;
@@ -18,6 +19,21 @@ export type SessionData = {
   sessionToken?: string;
   trustToken?: string;
 };
+
+/**
+ * Get the default session path for this operating system.
+ */
+function getDefaultSessionPath() {
+  if (process.platform === 'darwin') {
+    return join(homedir(), 'Library', 'Application Support', 'icloud-cli', 'session.json');
+  }
+
+  if (process.platform === 'win32') {
+    return join(process.env.APPDATA ?? join(homedir(), 'AppData', 'Roaming'), 'icloud-cli', 'session.json');
+  }
+
+  return join(process.env.XDG_CONFIG_HOME ?? join(homedir(), '.config'), 'icloud-cli', 'session.json');
+}
 
 /**
  * Save reusable iCloud auth data to disk.

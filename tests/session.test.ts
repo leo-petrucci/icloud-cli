@@ -7,8 +7,10 @@ import { makeTempDir, removeTempDir } from './helpers.js';
 let tempDir: string | undefined;
 
 afterEach(async () => {
+  vi.restoreAllMocks();
   vi.resetModules();
   delete process.env.ICLOUD_CLI_SESSION_PATH;
+  delete process.env.XDG_CONFIG_HOME;
 
   if (tempDir) {
     await removeTempDir(tempDir);
@@ -48,5 +50,15 @@ describe('session storage', () => {
     const { loadSessionData } = await import('../src/session.js');
 
     await expect(loadSessionData()).rejects.toThrow('No saved session. Run: icloud-cli login');
+  });
+
+  it('uses XDG_CONFIG_HOME on Linux when no explicit path is set', async () => {
+    tempDir = await makeTempDir('session-linux-path');
+    process.env.XDG_CONFIG_HOME = tempDir;
+    vi.spyOn(process, 'platform', 'get').mockReturnValue('linux');
+
+    const { SESSION_PATH } = await import('../src/session.js');
+
+    expect(SESSION_PATH).toBe(join(tempDir, 'icloud-cli', 'session.json'));
   });
 });
