@@ -10,6 +10,9 @@ export type IcloudAccount = {
     dsid?: unknown;
   };
   webservices?: {
+    ckdatabasews?: {
+      url?: unknown;
+    };
     reminders?: {
       url?: unknown;
     };
@@ -94,6 +97,51 @@ export function getRemindersRequestUrl(account: IcloudAccount, session: SessionD
   url.searchParams.set('lang', 'en-us');
   if (ifMatch) url.searchParams.set('methodOverride', 'PUT');
   url.searchParams.set('usertz', Intl.DateTimeFormat().resolvedOptions().timeZone);
+  return url.toString();
+}
+
+/**
+ * Get the current CloudKit database service URL from accountLogin data.
+ */
+export function getCloudKitDatabaseUrl(account: IcloudAccount): string {
+  const value = account.webservices?.ckdatabasews?.url;
+  if (typeof value !== 'string') {
+    throw new Error('Your iCloud account does not provide the CloudKit database service.');
+  }
+
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    throw new Error('Apple returned an invalid CloudKit database service URL.');
+  }
+
+  if (url.protocol !== 'https:') {
+    throw new Error('Apple returned an invalid CloudKit database service URL.');
+  }
+
+  url.pathname = '';
+  url.search = '';
+  url.hash = '';
+  return url.toString().replace(/\/$/, '');
+}
+
+/**
+ * Build a CloudKit database API URL with the account context that the service requires.
+ */
+export function getCloudKitRequestUrl(account: IcloudAccount, session: SessionData, container: string, scope: 'private' | 'shared', path: string): string {
+  const dsid = account.dsInfo?.dsid;
+  if (typeof dsid !== 'string' && typeof dsid !== 'number') {
+    throw new Error('Apple did not return an account DSID for CloudKit.');
+  }
+
+  const url = new URL(`${getCloudKitDatabaseUrl(account)}/database/1/${container}/production/${scope}/${path}`);
+  url.searchParams.set('ckjsBuildVersion', '2310ProjectDev27');
+  url.searchParams.set('ckjsVersion', '2.6.4');
+  url.searchParams.set('clientId', session.clientId ?? '');
+  url.searchParams.set('clientBuildNumber', '2628Build17');
+  url.searchParams.set('clientMasteringNumber', '2628Build17');
+  url.searchParams.set('dsid', String(dsid));
   return url.toString();
 }
 
