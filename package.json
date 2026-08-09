@@ -9,7 +9,7 @@
   "scripts": {
     "cli": "tsx src/cli.ts",
     "login": "tsx src/cli.ts login",
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "build:watch": "tsc --watch --preserveWatchOutput",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

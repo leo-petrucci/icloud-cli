@@ -116,10 +116,22 @@ icloud-cli whoami
 
 ## Session File
 
-The CLI saves session data here:
+The CLI saves session data here on macOS:
 
 ```text
 ~/Library/Application Support/icloud-cli/session.json
+```
+
+On Linux:
+
+```text
+${XDG_CONFIG_HOME:-~/.config}/icloud-cli/session.json
+```
+
+On Windows:
+
+```text
+%APPDATA%\icloud-cli\session.json
 ```
 
 This file is a secret. Do not commit it. Do not share it.
