@@ -10,6 +10,7 @@ export const SESSION_DIR = dirname(SESSION_PATH);
 export type SessionData = {
   accountCountry?: string;
   authAttributes?: string;
+  clientId?: string;
   cookies: Record<string, string>;
   extendedLogin?: boolean;
   savedAt: string;
