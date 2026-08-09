@@ -1,0 +1,32 @@
+{
+  "name": "icloud-cli",
+  "version": "1.0.0",
+  "description": "Network-only iCloud CLI experiments",
+  "main": "dist/cli.js",
+  "bin": {
+    "icloud-cli": "dist/cli.js"
+  },
+  "scripts": {
+    "cli": "tsx src/cli.ts",
+    "login": "tsx src/cli.ts login",
+    "build": "tsc",
+    "build:watch": "tsc --watch --preserveWatchOutput",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "commander": "^15.0.0",
+    "dotenv": "^17.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "tsx": "^4.23.1",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  }
+}
