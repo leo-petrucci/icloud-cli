@@ -3,6 +3,7 @@ import { Command } from 'commander';
 
 import { importHar } from './import-har.js';
 import { login } from './login.js';
+import { addNote, deleteNote, editNote, listNotes, showNote } from './notes.js';
 import { addReminder, addReminders, completeReminder, listReminders } from './reminders.js';
 import { whoami } from './whoami.js';
 
@@ -11,7 +12,7 @@ const program = new Command();
 program
   .name('icloud-cli')
   .description('Network-only iCloud CLI experiments')
-  .version('0.1.0');
+  .version('1.0.0');
 
 program
   .command('login')
@@ -74,6 +75,52 @@ reminders
   .argument('<id>', 'Reminder ID from reminders list')
   .action(async (id: string) => {
     await completeReminder(id);
+  });
+
+const notes = program.command('notes').description('Manage iCloud Notes');
+
+notes
+  .command('list')
+  .description('List recent notes and their IDs')
+  .option('--json', 'Print notes as JSON')
+  .action(async (options: { json?: boolean }) => {
+    await listNotes({ json: options.json === true });
+  });
+
+notes
+  .command('show')
+  .description('Show one note')
+  .argument('<id>', 'Note ID from notes list')
+  .option('--json', 'Print the note as JSON')
+  .action(async (id: string, options: { json?: boolean }) => {
+    await showNote(id, { json: options.json === true });
+  });
+
+notes
+  .command('add')
+  .description('Add a note to the default Notes folder')
+  .argument('<title>', 'Note title')
+  .option('--body <text>', 'Note body')
+  .action(async (title: string, options: { body?: string }) => {
+    await addNote(title, { body: options.body });
+  });
+
+notes
+  .command('edit')
+  .description('Edit one note title and/or body')
+  .argument('<id>', 'Note ID from notes list')
+  .option('--title <title>', 'New note title')
+  .option('--body <text>', 'New note body')
+  .action(async (id: string, options: { body?: string; title?: string }) => {
+    await editNote(id, { body: options.body, title: options.title });
+  });
+
+notes
+  .command('delete')
+  .description('Move one note to Recently Deleted')
+  .argument('<id>', 'Note ID from notes list')
+  .action(async (id: string) => {
+    await deleteNote(id);
   });
 
 program.parseAsync().catch((error: unknown) => {

@@ -14,10 +14,11 @@ Working now:
 - SMS 2FA flow
 - Trusted session save
 - Session import from a browser HAR file
+- Basic Reminders and Notes commands
 
 Not done yet:
 
-- Commands for Notes, Drive, Photos, and other services
+- Commands for Drive, Photos, and other services
 - Full cookie/session validation
 
 ## Install
@@ -171,6 +172,46 @@ icloud-cli reminders complete <reminder-id>
 ```
 
 Each command first calls `accountLogin` to get the current Reminders service URL. The URL can change between sessions.
+
+## Notes
+
+List recent notes and their IDs:
+
+```sh
+icloud-cli notes list
+```
+
+Use JSON output in scripts:
+
+```sh
+icloud-cli notes list --json
+```
+
+Show one note:
+
+```sh
+icloud-cli notes show <note-id>
+```
+
+Add a note to the default Notes folder:
+
+```sh
+icloud-cli notes add "Trip ideas" --body "Book train tickets"
+```
+
+Edit a note title and/or body:
+
+```sh
+icloud-cli notes edit <note-id> --title "Updated title" --body "Updated body"
+```
+
+Move a note to Recently Deleted:
+
+```sh
+icloud-cli notes delete <note-id>
+```
+
+Each command first calls `accountLogin` to get the current CloudKit database service URL. The URL can change between sessions.
 
 ## Security Notes
 
